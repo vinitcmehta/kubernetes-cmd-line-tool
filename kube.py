@@ -40,6 +40,17 @@ def patch(apps_v1, audited_images):
         print("Deployment updated. status='%s'" % str(api_response.status))
 
 
+def list_cronjobs(namespace, labels):
+    print("Listing cronjobs")
+
+def list_statefulsets(namespace, labels):
+    print("Listing statefulsets")
+
+def list_daemonsets(namespace, labels):
+    print("Listing daemonsets")
+
+
+
 def main():
     # Create the parser
     my_parser = argparse.ArgumentParser(
