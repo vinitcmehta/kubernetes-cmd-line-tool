@@ -24,6 +24,23 @@ from kubernetes.client import configuration
 from pick import pick  # install pick using `pip install pick`
 import argparse
 
+def patch(apps_v1, audited_images):
+    for audited_image in audited_images:
+        print(audited_image)
+
+        deployment = apps_v1.read_namespaced_deployment(audited_image.get("name"), audited_image.get("namespace"))
+        print(deployment)
+        if "/" not in audited_image.get("image"):
+            new_image = "eu.gcr.io/oc-docker-mirror/" + audited_image.get("image")
+        else:
+            split_image = audited_image.get("image").split("/")
+            new_image = "eu.gcr.io/oc-docker-mirror/" + split_image[1]
+        deployment.spec.template.spec.containers[audited_image.get("position")].image = new_image
+        api_response = apps_v1.patch_namespaced_deployment(name=audited_image.get("name"),
+                                                           namespace=audited_image.get("namespace"),
+                                                           body=deployment)
+        print("Deployment updated. status='%s'" % str(api_response.status))
+
 
 def main():
     # Create the parser
@@ -42,6 +59,11 @@ def main():
                            type=str,
                            help='the labels to filter the deployment on',
                            dest="labels")
+
+    my_parser.add_argument('-p', '--patch',
+                           action='store_true',
+                           help='use this flag to patch deployments',
+                           dest="patch")
 
     # Execute the parse_args() method
     args = my_parser.parse_args()
@@ -63,15 +85,10 @@ def main():
     print("Active host is %s" % configuration.Configuration().host)
 
     apps_v1 = client.AppsV1Api()
-    print("Listing deployments with images from the official Docker registry:")
-    print(
-        "%s\t%s\t%s" %
-        ("Namespace",
-         "Deployment name",
-         "container image"))
 
     namespace = args.namespace
     labels = args.labels
+    is_patch = args.patch
     if namespace is not None:
         print("The namespace selected is :", namespace)
         if labels is not None:
@@ -84,15 +101,39 @@ def main():
         else:
             ret = apps_v1.list_deployment_for_all_namespaces(watch=False)
 
+
+
+    print("Listing deployments with images from the official Docker registry:")
+    print(
+        "%s\t%s\t%s" %
+        ("Namespace",
+         "Deployment name",
+         "container image"))
+
+    audited_images =[]
     for item in ret.items:
+        container_position = 0
         for container in item.spec.template.spec.containers:
+
+            print(container_position)
             registry = "docker.io"
             if (registry in container.image) or ("/" not in container.image):
+                container_dict = {'name': item.metadata.name, 'namespace': item.metadata.namespace,
+                        'image': container.image, 'position': container_position}
+                audited_images.append(container_dict)
                 print(
                     "%s\t%s\t%s" %
                     (item.metadata.namespace,
                     item.metadata.name,
                     container.image))
+            container_position += 1
+
+    if is_patch:
+        if audited_images == []:
+            print("No deployments available to patch")
+        else:
+            print("Patching deployments")
+            patch(apps_v1, audited_images)
 
 
 if __name__ == '__main__':
