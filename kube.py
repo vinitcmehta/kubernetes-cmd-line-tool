@@ -24,12 +24,10 @@ from kubernetes.client import configuration
 from pick import pick  # install pick using `pip install pick`
 import argparse
 
+
 def patch(apps_v1, audited_images):
     for audited_image in audited_images:
-        print(audited_image)
-
         deployment = apps_v1.read_namespaced_deployment(audited_image.get("name"), audited_image.get("namespace"))
-        print(deployment)
         if "/" not in audited_image.get("image"):
             new_image = "eu.gcr.io/oc-docker-mirror/" + audited_image.get("image")
         else:
@@ -114,8 +112,6 @@ def main():
     for item in ret.items:
         container_position = 0
         for container in item.spec.template.spec.containers:
-
-            print(container_position)
             registry = "docker.io"
             if (registry in container.image) or ("/" not in container.image):
                 container_dict = {'name': item.metadata.name, 'namespace': item.metadata.namespace,
