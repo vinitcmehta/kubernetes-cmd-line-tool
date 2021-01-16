@@ -39,16 +39,16 @@ def main():
 
     print("Active host is %s" % configuration.Configuration().host)
 
-    v1 = client.CoreV1Api()
-    print("Listing pods with their IPs:")
-    ret = v1.list_pod_for_all_namespaces(watch=False)
+    apps_v1 = client.AppsV1Api()
+    print("Listing deployments:")
+    ret = apps_v1.list_deployment_for_all_namespaces(watch=False)
     for item in ret.items:
-        print(
-            "%s\t%s\t%s" %
-            (item.status.pod_ip,
-             item.metadata.namespace,
-             item.metadata.name))
-
+        for container in item.spec.template.spec.containers:
+            print(
+                "%s\t%s\t%s" %
+                (item.metadata.namespace,
+                item.metadata.name,
+                container.image))
 
 if __name__ == '__main__':
     main()
