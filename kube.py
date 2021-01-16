@@ -34,8 +34,14 @@ def main():
     my_parser.add_argument('-n', '--namespace',
                            metavar="namespace",
                            type=str,
-                           help='the namepsace to list from',
+                           help='the namespace to list from',
                            dest="namespace")
+
+    my_parser.add_argument('-l', '--selector',
+                           metavar="selector",
+                           type=str,
+                           help='the labels to filter the deployment on',
+                           dest="labels")
 
     # Execute the parse_args() method
     args = my_parser.parse_args()
@@ -65,11 +71,18 @@ def main():
          "container image"))
 
     namespace = args.namespace
+    labels = args.labels
     if namespace is not None:
         print("The namespace selected is :", namespace)
-        ret = apps_v1.list_namespaced_deployment(namespace)
+        if labels is not None:
+            ret = apps_v1.list_namespaced_deployment(namespace, label_selector=labels)
+        else:
+            ret = apps_v1.list_namespaced_deployment(namespace)
     else:
-        ret = apps_v1.list_deployment_for_all_namespaces(watch=False)
+        if labels is not None:
+            ret = apps_v1.list_deployment_for_all_namespaces(watch=False, label_selector=labels)
+        else:
+            ret = apps_v1.list_deployment_for_all_namespaces(watch=False)
 
     for item in ret.items:
         for container in item.spec.template.spec.containers:
