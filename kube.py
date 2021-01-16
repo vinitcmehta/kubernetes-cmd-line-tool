@@ -40,15 +40,94 @@ def patch(apps_v1, audited_images):
         print("Deployment updated. status='%s'" % str(api_response.status))
 
 
-def list_cronjobs(namespace, labels):
-    print("Listing cronjobs")
+def list_cronjobs(batch_v1beta1, namespace, labels):
+    if namespace is not None:
+        if labels is not None:
+            ret = batch_v1beta1.list_namespaced_cron_job(namespace, label_selector=labels)
+        else:
+            ret = batch_v1beta1.list_namespaced_cron_job(namespace)
+    else:
+        if labels is not None:
+            ret = batch_v1beta1.list_cron_job_for_all_namespaces(watch=False, label_selector=labels)
+        else:
+            ret = batch_v1beta1.list_cron_job_for_all_namespaces(watch=False)
 
-def list_statefulsets(namespace, labels):
-    print("Listing statefulsets")
+    print("Listing cronjobs with images from the official Docker registry:")
+    print(
+        "%s\t%s\t%s" %
+        ("Namespace",
+         "Cronjob name",
+         "container image"))
 
-def list_daemonsets(namespace, labels):
-    print("Listing daemonsets")
+    for item in ret.items:
+        for container in item.spec.jobTemplate.spec.template.spec.containers:
+            registry = "docker.io"
+            if (registry in container.image) or ("/" not in container.image):
+                print(
+                    "%s\t%s\t%s" %
+                    (item.metadata.namespace,
+                     item.metadata.name,
+                     container.image))
 
+
+def list_statefulsets(apps_v1, namespace, labels):
+    if namespace is not None:
+        if labels is not None:
+            ret = apps_v1.list_namespaced_stateful_set(namespace, label_selector=labels)
+        else:
+            ret = apps_v1.list_namespaced_stateful_set(namespace)
+    else:
+        if labels is not None:
+            ret = apps_v1.list_stateful_set_for_all_namespaces(watch=False, label_selector=labels)
+        else:
+            ret = apps_v1.list_stateful_set_for_all_namespaces(watch=False)
+
+    print("Listing statefulsets with images from the official Docker registry:")
+    print(
+        "%s\t%s\t%s" %
+        ("Namespace",
+         "Statefulset name",
+         "container image"))
+
+    for item in ret.items:
+        for container in item.spec.template.spec.containers:
+            registry = "docker.io"
+            if (registry in container.image) or ("/" not in container.image):
+                print(
+                    "%s\t%s\t%s" %
+                    (item.metadata.namespace,
+                     item.metadata.name,
+                     container.image))
+
+
+def list_daemonsets(apps_v1, namespace, labels):
+    if namespace is not None:
+        if labels is not None:
+            ret = apps_v1.list_namespaced_daemon_set(namespace, label_selector=labels)
+        else:
+            ret = apps_v1.list_namespaced_daemon_set(namespace)
+    else:
+        if labels is not None:
+            ret = apps_v1.list_daemon_set_for_all_namespaces(watch=False, label_selector=labels)
+        else:
+            ret = apps_v1.list_daemon_set_for_all_namespaces(watch=False)
+
+    print("Listing daemonsets with images from the official Docker registry:")
+    print(
+        "%s\t%s\t%s" %
+        ("Namespace",
+         "Daemonset name",
+         "container image"))
+
+    for item in ret.items:
+        for container in item.spec.template.spec.containers:
+            registry = "docker.io"
+            if (registry in container.image) or ("/" not in container.image):
+                print(
+                    "%s\t%s\t%s" %
+                    (item.metadata.namespace,
+                     item.metadata.name,
+                     container.image))
 
 
 def main():
@@ -74,10 +153,23 @@ def main():
                            help='use this flag to patch deployments',
                            dest="patch")
 
+    my_parser.add_argument('-c', '--cronjobs',
+                           action='store_true',
+                           help='use this flag to list cronjobs',
+                           dest="cronjobs")
+
+    my_parser.add_argument('-s', '--statefulsets',
+                           action='store_true',
+                           help='use this flag to list statefulsets',
+                           dest="statefulsets")
+
+    my_parser.add_argument('-d', '--daemonsets',
+                           action='store_true',
+                           help='use this flag to list daemonsets',
+                           dest="daemonsets")
+
     # Execute the parse_args() method
     args = my_parser.parse_args()
-
-
 
     contexts, active_context = config.list_kube_config_contexts()
     if not contexts:
@@ -94,10 +186,14 @@ def main():
     print("Active host is %s" % configuration.Configuration().host)
 
     apps_v1 = client.AppsV1Api()
+    batch_v1beta1 = client.BatchV1beta1Api()
 
     namespace = args.namespace
     labels = args.labels
     is_patch = args.patch
+    is_cronjobs = args.cronjobs
+    is_statefulsets = args.statefulsets
+    is_daemonsets = args.daemonsets
     if namespace is not None:
         print("The namespace selected is :", namespace)
         if labels is not None:
@@ -141,6 +237,15 @@ def main():
         else:
             print("Patching deployments")
             patch(apps_v1, audited_images)
+
+    if is_cronjobs:
+        list_cronjobs(batch_v1beta1, namespace, labels)
+
+    if is_statefulsets:
+        list_statefulsets(apps_v1, namespace, labels)
+
+    if is_daemonsets:
+        list_daemonsets(apps_v1, namespace, labels)
 
 
 if __name__ == '__main__':
