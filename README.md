@@ -4,5 +4,11 @@ Command Line Tool that interfaces with a Kubernetes Cluster API and retrieves in
 Follow instructions at https://kind.sigs.k8s.io/docs/user/quick-start/ to quickly create your own cluster locally if you don't already have one.
 
 Please install the Kubernetes Python Client from here: https://github.com/kubernetes-client/python/
+Also install the Pick library by "pip install pick"
 
+The base code of this repo originates from the example inside the Kubernetes Python repo at: https://github.com/kubernetes-client/python/blob/master/examples/pod_config_list.py
+
+Running this tool:
+Run this tool through the command line by "python kube.py"
+Please note that this script will not run through an IDE, so make sure to run it through the command line
 
