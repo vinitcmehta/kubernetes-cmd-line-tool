@@ -50,13 +50,14 @@ def main():
 
     for item in ret.items:
         for container in item.spec.template.spec.containers:
-            registry="docker.io"
+            registry = "docker.io"
             if (registry in container.image) or ("/" not in container.image):
                 print(
                     "%s\t%s\t%s" %
                     (item.metadata.namespace,
                     item.metadata.name,
                     container.image))
+
 
 if __name__ == '__main__':
     main()
