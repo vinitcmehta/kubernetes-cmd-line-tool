@@ -13,6 +13,7 @@ Running this tool:
 Run this tool through the command line by "python kube.py"
 Can specify a namespace by "python kube.py --namespace default" for example to search the default namespace
 Can specify label selectors to filter by with "python kube.py --selector key1=value1" for example
+Can patch deployments to use a mirrored image with "python kube.py -p"
 Please note that this script will not run through an IDE, so make sure to run it through the command line
 
 "python kube.py -h" to see usage
