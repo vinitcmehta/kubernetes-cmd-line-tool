@@ -20,6 +20,9 @@ Please note that this script will not run through an IDE, so make sure to run it
 
 "python kube.py -h" to see usage
 
+Tests:
+A basic python linter has been added to a GitHub Actions workflow and can be seen in the .github folder
+
 Bugs:
 When patching to the mirrored repos, these deployments fail as the mirrored repo seems to be in a GCP project that doesn't exist any more. Output from docker pull below:
 
