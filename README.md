@@ -18,4 +18,9 @@ Please note that this script will not run through an IDE, so make sure to run it
 
 "python kube.py -h" to see usage
 
+Bugs:
+When patching to the mirrored repos, these deployments fail as the mirrored repo seems to be in a GCP project that doesn't exist any more. Output from docker pull below:
 
+C:\Users\vinit\kubernetes-cmd-line-tool>docker pull eu.gcr.io/oc-docker-mirror/nginx
+Using default tag: latest
+Error response from daemon: Get https://eu.gcr.io/v2/oc-docker-mirror/nginx/manifests/latest: unknown: Project 'project:oc-docker-mirror' not found or deleted.
