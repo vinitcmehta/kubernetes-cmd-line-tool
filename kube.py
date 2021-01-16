@@ -40,15 +40,23 @@ def main():
     print("Active host is %s" % configuration.Configuration().host)
 
     apps_v1 = client.AppsV1Api()
-    print("Listing deployments:")
+    print("Listing deployments with images from the official Docker registry:")
+    print(
+        "%s\t%s\t%s" %
+        ("Namespace",
+         "Deployment name",
+         "container image"))
     ret = apps_v1.list_deployment_for_all_namespaces(watch=False)
+
     for item in ret.items:
         for container in item.spec.template.spec.containers:
-            print(
-                "%s\t%s\t%s" %
-                (item.metadata.namespace,
-                item.metadata.name,
-                container.image))
+            registry="docker.io"
+            if (registry in container.image) or ("/" not in container.image):
+                print(
+                    "%s\t%s\t%s" %
+                    (item.metadata.namespace,
+                    item.metadata.name,
+                    container.image))
 
 if __name__ == '__main__':
     main()
