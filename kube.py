@@ -22,9 +22,26 @@ Please install the pick library before running this example.
 from kubernetes import client, config
 from kubernetes.client import configuration
 from pick import pick  # install pick using `pip install pick`
+import argparse
 
 
 def main():
+    # Create the parser
+    my_parser = argparse.ArgumentParser(
+        description='List the deployments in the cluster with images from the offical Docker registry')
+
+    # Add the arguments
+    my_parser.add_argument('-n', '--namespace',
+                           metavar="namespace",
+                           type=str,
+                           help='the namepsace to list from',
+                           dest="namespace")
+
+    # Execute the parse_args() method
+    args = my_parser.parse_args()
+
+
+
     contexts, active_context = config.list_kube_config_contexts()
     if not contexts:
         print("Cannot find any context in kube-config file.")
@@ -46,7 +63,13 @@ def main():
         ("Namespace",
          "Deployment name",
          "container image"))
-    ret = apps_v1.list_deployment_for_all_namespaces(watch=False)
+
+    namespace = args.namespace
+    if namespace is not None:
+        print("The namespace selected is :", namespace)
+        ret = apps_v1.list_namespaced_deployment(namespace)
+    else:
+        ret = apps_v1.list_deployment_for_all_namespaces(watch=False)
 
     for item in ret.items:
         for container in item.spec.template.spec.containers:
