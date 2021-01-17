@@ -28,6 +28,10 @@ All of the above flags and arguments can work together but patch right now will 
 ## Tests
 A basic python linter has been added to a GitHub Actions workflow and can be seen in the .github folder
 
+## TO DO
+
+Refactoring and  moving more code from kube.py -> helper.py  
+
 ## Bugs
 When patching to the mirrored repos, these deployments fail as the mirrored repo seems to be in a GCP project that doesn't exist any more. Output from docker pull below:
 
