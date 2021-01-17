@@ -22,7 +22,8 @@ Can list statefulsets with **python kube.py -s**
 Can list daemonsets with **python kube.py -d**  
 Please note that this script will not run through an IDE, so make sure to run it through the command line  
 
-**python kube.py -h** to see usage
+**python kube.py -h** to see usage  
+All of the above flags and arguments can work together but patch right now will only patch the deployments 
 
 ## Tests
 A basic python linter has been added to a GitHub Actions workflow and can be seen in the .github folder
