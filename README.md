@@ -14,7 +14,7 @@ The base code of this repo originates from the example inside the Kubernetes Pyt
 
 ## Running this tool
 Run this tool through the command line by **python kube.py**  
-Can specify a namespace by **python kube.py --namespace default** for example to search the default namespace  
+Can specify a namespace by **python kube.py --namespace default** for example to search the default namespace (If this flag is not specified, default behaviour is to search through all namespaces)  
 Can specify label selectors to filter by with **python kube.py --selector key1=value1** for example  
 Can patch deployments to use a mirrored image with **python kube.py --patch**  
 Can list cronjobs with **python kube.py -c**  
