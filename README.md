@@ -30,7 +30,7 @@ A basic python linter has been added to a GitHub Actions workflow and can be see
 
 ## To Do
 
-Error handling
+Error handling  
 Refactoring
 
 ## Bugs
