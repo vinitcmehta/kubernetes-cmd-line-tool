@@ -4,15 +4,9 @@ from helper import registry_check
 # List daemonsets from official Docker registry
 def list_statefulsets(apps_v1, namespace, labels):
     if namespace is not None:
-        if labels is not None:
-            ret = apps_v1.list_namespaced_stateful_set(namespace, label_selector=labels)
-        else:
-            ret = apps_v1.list_namespaced_stateful_set(namespace)
+        ret = apps_v1.list_namespaced_stateful_set(namespace, label_selector=labels)
     else:
-        if labels is not None:
-            ret = apps_v1.list_stateful_set_for_all_namespaces(watch=False, label_selector=labels)
-        else:
-            ret = apps_v1.list_stateful_set_for_all_namespaces(watch=False)
+        ret = apps_v1.list_stateful_set_for_all_namespaces(watch=False, label_selector=labels)
 
     print("Listing statefulsets with images from the official Docker registry:")
     print(

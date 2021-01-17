@@ -94,18 +94,12 @@ def main():
     is_statefulsets = args.statefulsets
     is_daemonsets = args.daemonsets
 
-    # Check if namespaced search and/or searching with labels
+    # Check if namespaced search
     if namespace is not None:
         print("The namespace selected is :", namespace)
-        if labels is not None:
-            ret = apps_v1.list_namespaced_deployment(namespace, label_selector=labels)
-        else:
-            ret = apps_v1.list_namespaced_deployment(namespace)
+        ret = apps_v1.list_namespaced_deployment(namespace, label_selector=labels)
     else:
-        if labels is not None:
-            ret = apps_v1.list_deployment_for_all_namespaces(watch=False, label_selector=labels)
-        else:
-            ret = apps_v1.list_deployment_for_all_namespaces(watch=False)
+        ret = apps_v1.list_deployment_for_all_namespaces(watch=False, label_selector=labels)
 
     print("Listing deployments with images from the official Docker registry:")
     print(
