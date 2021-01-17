@@ -1,6 +1,7 @@
 from helper import registry_check
 
 
+# List cronjobs from official Docker registry
 def list_cronjobs(batch_v1beta1, namespace, labels):
     if namespace is not None:
         if labels is not None:

@@ -1,6 +1,7 @@
 from helper import registry_check
 
 
+# List daemonsets from official Docker registry
 def list_daemonsets(apps_v1, namespace, labels):
     if namespace is not None:
         if labels is not None:

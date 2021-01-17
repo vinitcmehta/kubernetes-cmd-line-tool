@@ -12,6 +12,7 @@ from statefulsets import list_statefulsets
 from daemonsets import list_daemonsets
 
 
+# Patch Deployments using images from the official Docker registry
 def patch(apps_v1, audited_images):
     for audited_image in audited_images:
         deployment = apps_v1.read_namespaced_deployment(audited_image.get("name"), audited_image.get("namespace"))
@@ -85,12 +86,15 @@ def main():
     apps_v1 = client.AppsV1Api()
     batch_v1beta1 = client.BatchV1beta1Api()
 
+    # Get command line flags/arguments
     namespace = args.namespace
     labels = args.labels
     is_patch = args.patch
     is_cronjobs = args.cronjobs
     is_statefulsets = args.statefulsets
     is_daemonsets = args.daemonsets
+
+    # Check if namespaced search and/or searching with labels
     if namespace is not None:
         print("The namespace selected is :", namespace)
         if labels is not None:
@@ -110,6 +114,7 @@ def main():
          "Deployment name",
          "container image"))
 
+    # List deployments with images from official Docker registry
     audited_images = []
     for item in ret.items:
         container_position = 0
@@ -126,6 +131,7 @@ def main():
                      container.image))
             container_position += 1
 
+    # Check whether to patch deployments or not
     if is_patch:
         if not audited_images:
             print("No deployments available to patch")
@@ -133,12 +139,15 @@ def main():
             print("Patching deployments")
             patch(apps_v1, audited_images)
 
+    # Check whether to list cronjobs
     if is_cronjobs:
         list_cronjobs(batch_v1beta1, namespace, labels)
 
+    # Check whether to list statefulsets
     if is_statefulsets:
         list_statefulsets(apps_v1, namespace, labels)
 
+    # Check whether to list daemonsets
     if is_daemonsets:
         list_daemonsets(apps_v1, namespace, labels)
 
