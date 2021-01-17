@@ -7,3 +7,12 @@ def registry_check(item, container):
             (item.metadata.namespace,
              item.metadata.name,
              container.image))
+
+
+def print_resource(resource_type):
+    print("Listing " + resource_type + "s with images from the official Docker registry:")
+    print(
+        "%s\t%s\t%s" %
+        ("Namespace",
+         resource_type + " name",
+         "container image"))

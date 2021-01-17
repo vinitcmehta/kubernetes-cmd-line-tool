@@ -10,6 +10,7 @@ import argparse
 from cronjobs import list_cronjobs
 from statefulsets import list_statefulsets
 from daemonsets import list_daemonsets
+from helper import print_resource
 
 
 # Patch Deployments using images from the official Docker registry
@@ -101,12 +102,7 @@ def main():
     else:
         ret = apps_v1.list_deployment_for_all_namespaces(watch=False, label_selector=labels)
 
-    print("Listing deployments with images from the official Docker registry:")
-    print(
-        "%s\t%s\t%s" %
-        ("Namespace",
-         "Deployment name",
-         "container image"))
+    print_resource("Deployment")
 
     # List deployments with images from official Docker registry
     audited_images = []
